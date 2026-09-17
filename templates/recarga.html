@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>EV Charge SP — Recarga em Andamento</title>
+  <title>GoodCharge — Recarga em Andamento</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
 </head>
 <body>
@@ -11,7 +11,7 @@
 <nav class="navbar">
   <a href="/dashboard" class="navbar-brand">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-    EV Charge SP
+    GoodCharge
   </a>
   <div class="navbar-links">
     <a href="/dashboard">Nova Recarga</a>
@@ -30,7 +30,7 @@
 <div class="mobile-menu" id="mobileMenu">
   <a href="/dashboard">⚡ Nova Recarga</a>
   <a href="/perfil">👤 Meu Perfil</a>
-  <a href="/ia">🤖 IA Assistente</a>
+  <a href="/ia">IA Goole</a>
   <a href="/reservas">📅 Minhas Reservas</a>
   <div class="mobile-divider"></div>
   <button class="btn btn-ghost" onclick="logout()" style="width:100%;justify-content:flex-start;padding:0.9rem 1.25rem;">🚪 Sair</button>
@@ -92,7 +92,7 @@
         <div style="display:flex;gap:1rem;flex-wrap:wrap;">
           <a href="/dashboard" class="btn btn-primary">⚡ Nova Recarga</a>
           <a href="/perfil" class="btn btn-outline">👤 Ver Perfil</a>
-          <a href="/ia" class="btn btn-ghost">🤖 Perguntar à IA</a>
+          <a href="/ia" class="btn btn-ghost" style="display:flex;align-items:center;gap:8px;"><img src="/static/goole.png" style="width:28px;height:28px;object-fit:cover;border-radius:50%;background:white;"/> Perguntar à IA</a>
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ let turnCount = 0;  // Contador de turnos de conversa
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  addMessage('ai', '👋 Olá! Sou o **ChargeGrid Assistant**, seu assistente inteligente de recarga de VEs.\n\n🧠 **Tenho memória de conversa** — posso me lembrar do que você disse anteriormente nesta sessão.\n\nDigite **ajuda** para ver o que posso responder ou use as sugestões abaixo!');
+  addMessage('ai', '👋 Olá! Sou o **Goole**, seu assistente inteligente de recarga de VEs.\n\n🧠 **Tenho memória de conversa** — posso me lembrar do que você disse anteriormente nesta sessão.\n\nDigite **ajuda** para ver o que posso responder ou use as sugestões abaixo!');
   document.getElementById('chatInput').focus();
   updateHistoryBadge(0);
 });
@@ -100,7 +100,11 @@ function addMessage(role, text) {
 
   const avatar = document.createElement('div');
   avatar.className = 'chat-avatar';
-  avatar.textContent = isAI ? '🤖' : '👤';
+  if (isAI) {
+    avatar.innerHTML = '<img src="/static/goole.png" style="width:100%;height:100%;object-fit:cover;border-radius:50%;background:white;"/>';
+  } else {
+    avatar.textContent = '👤';
+  }
 
   const bubble = document.createElement('div');
   bubble.className = 'chat-bubble';
@@ -133,7 +137,7 @@ function setTyping(active) {
     indicator.className = 'chat-msg ai';
     indicator.id = 'typingIndicator';
     indicator.innerHTML = `
-      <div class="chat-avatar">🤖</div>
+      <div class="chat-avatar"><img src="/static/goole.png" style="width:100%;height:100%;object-fit:cover;border-radius:50%;background:white;"/></div>
       <div class="chat-bubble chat-typing">
         <span style="display:inline-flex;gap:4px;align-items:center;">
           <span style="animation:bounce 0.8s infinite 0s">●</span>

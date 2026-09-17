@@ -1,6 +1,6 @@
 @echo off
 echo ======================================
-echo   EV CHARGE SP - INICIAR SISTEMA
+echo   GoodCharge - INICIAR SISTEMA
 echo ======================================
 echo.
 

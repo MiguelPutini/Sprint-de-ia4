@@ -23,6 +23,14 @@ const totalMin = data.tempo_min;
 const totalEnergia = data.energia_kwh;
 
 let currentMin = 0;
+
+// AVISA O FIREBASE PARA LIGAR O RELÉ ESP32
+fetch('https://next-fiap-default-rtdb.firebaseio.com/estacao1.json', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ sessao_ativa: true })
+}).catch(e => console.error("Erro Firebase ligar:", e));
+
 const interval = setInterval(() => {
   currentMin++;
   const pct = Math.round((currentMin / totalMin) * 100);
@@ -41,6 +49,13 @@ const interval = setInterval(() => {
 }, 600); // 600ms per "minute" for demo speed
 
 function showReport() {
+  // AVISA O FIREBASE PARA DESLIGAR O RELÉ ESP32
+  fetch('https://next-fiap-default-rtdb.firebaseio.com/estacao1.json', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sessao_ativa: false })
+  }).catch(e => console.error("Erro Firebase desligar:", e));
+
   document.getElementById('viewCharging').classList.add('hidden');
   const rep = document.getElementById('viewReport');
   rep.classList.remove('hidden');

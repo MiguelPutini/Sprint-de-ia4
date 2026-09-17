@@ -1,4 +1,4 @@
-# ⚡ ChargeGrid Intelligence — EV Charge SP
+# ⚡ ChargeGrid Intelligence — GoodCharge
 ### GoodWe · EV Challenge 2026 | Sprint 2
 
 Sistema full-stack de gestão e recarga de veículos elétricos na cidade de São Paulo, com **assistente de IA integrado** baseado em GPT-4o-mini, memória de conversa e context injection com dados reais do banco de dados.

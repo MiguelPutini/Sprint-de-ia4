@@ -1,4 +1,4 @@
-# 🧠 Explicação da Lógica do Sistema — EV Charge SP
+# 🧠 Explicação da Lógica do Sistema — GoodCharge
 
 Este documento detalha o funcionamento interno do backend em Python (Flask), explicando como as diferentes tecnologias se integram para criar uma experiência de recarga de veículos elétricos segura e inteligente.
 

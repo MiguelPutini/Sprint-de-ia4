@@ -9,13 +9,36 @@ from openai import OpenAI, APIError, AuthenticationError
 from functools import wraps
 from dotenv import load_dotenv
 from collections import defaultdict
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory
 
 load_dotenv(override=True)
 
-# ─── CONVERSATION HISTORY (in-memory, por sessão de usuário) ──────────────────
-# Armazena até MAX_HISTORY mensagens por usuário para manter contexto de diálogo
-MAX_HISTORY = 20
-conversation_history = defaultdict(list)  # {user_id: [{role, content}, ...]}
+# ─── CONVERSATION HISTORY (in-memory, por sessão de usuário via LangChain) ───
+store = {}
+
+def get_session_history(session_id: str) -> BaseChatMessageHistory:
+    if session_id not in store:
+        store[session_id] = ChatMessageHistory()
+    return store[session_id]
+
+# Configurações do Agente LangChain
+chat_model = ChatOpenAI(model="gpt-4o-mini", temperature=0.7, max_tokens=600)
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "{system_prompt}"),
+    MessagesPlaceholder(variable_name="history"),
+    ("human", "{question}")
+])
+chain = prompt | chat_model
+agent_with_history = RunnableWithMessageHistory(
+    chain,
+    get_session_history,
+    input_messages_key="question",
+    history_messages_key="history",
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -533,7 +556,9 @@ def ai_chat(uid):
 
     # Limpar histórico se solicitado
     if clear_history:
-        conversation_history[uid] = []
+        session_id = str(uid)
+        if session_id in store:
+            store[session_id].clear()
         return jsonify({'response': '🗑️ Histórico de conversa limpo com sucesso!'})
 
     conn = get_db()
@@ -616,34 +641,20 @@ Usuário: "Quem ganhou o campeonato ontem?"
 Assistente: "Desculpe, **{user['nome']}**, mas meu escopo é o sistema ChargeGrid de recargas de VEs. Não tenho acesso a informações sobre esportes. Posso te ajudar com seu histórico de recargas ou gerenciar suas reservas?"
 """
 
-        # ─── Gerenciamento do Histórico de Conversa (Memória) ────────────────
-        # Adiciona a nova mensagem do usuário ao histórico
-        conversation_history[uid].append({"role": "user", "content": user_msg})
-
-        # Monta a lista de mensagens: [system] + [histórico limitado]
-        history_window = conversation_history[uid][-(MAX_HISTORY):]
-        messages = [{"role": "system", "content": system_prompt}] + history_window
-
-        # ─── Chamada à API OpenAI ─────────────────────────────────────────────
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=messages,
-            temperature=0.7,
-            max_tokens=600
+        # ─── Gerenciamento do Histórico e Chamada ao Agente via LangChain ────
+        session_id = str(uid)
+        
+        response = agent_with_history.invoke(
+            {"system_prompt": system_prompt, "question": user_msg},
+            config={"configurable": {"session_id": session_id}}
         )
 
-        ai_response = response.choices[0].message.content
-
-        # Salva a resposta da IA no histórico
-        conversation_history[uid].append({"role": "assistant", "content": ai_response})
-
-        # Limita o histórico ao máximo definido para evitar crescimento infinito
-        if len(conversation_history[uid]) > MAX_HISTORY:
-            conversation_history[uid] = conversation_history[uid][-MAX_HISTORY:]
+        ai_response = response.content
+        history_length = len(store[session_id].messages)
 
         return jsonify({
             'response': ai_response,
-            'history_length': len(conversation_history[uid])
+            'history_length': history_length
         })
 
     except AuthenticationError:
@@ -667,15 +678,18 @@ Assistente: "Desculpe, **{user['nome']}**, mas meu escopo é o sistema ChargeGri
 @token_required
 def clear_chat_history(uid):
     """Limpa o histórico de conversa do usuário em memória."""
-    cleared = len(conversation_history.get(uid, []))
-    conversation_history[uid] = []
+    session_id = str(uid)
+    cleared = 0
+    if session_id in store:
+        cleared = len(store[session_id].messages)
+        store[session_id].clear()
     return jsonify({'message': f'Histórico limpo. {cleared} mensagens removidas.'})
 
 
 if __name__ == '__main__':
     port = int(os.getenv('FLASK_PORT', 5000))
-    print(f"\n=== EV CHARGE SP ===")
+    print(f"\n=== GoodCharge ===")
     print(f"Servidor rodando em http://localhost:{port}")
     print(f"Banco: {DB_CONFIG['database']}@{DB_CONFIG['host']}")
     print(f"====================\n")
-    app.run(debug=True, port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)
