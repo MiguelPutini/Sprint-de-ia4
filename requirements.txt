@@ -9,3 +9,4 @@ gunicorn
 langchain
 langchain-openai
 langchain-community
+reportlab
