@@ -1,9 +1,65 @@
 # ⚡ ChargeGrid Intelligence — GoodCharge
-### GoodWe · EV Challenge 2026 | Sprint 2
+### GoodWe · EV Challenge 2026 | Sprint 4 — Avaliação Sistemática
 
 Sistema full-stack de gestão e recarga de veículos elétricos na cidade de São Paulo, com **assistente de IA integrado** baseado em GPT-4o-mini, memória de conversa e context injection com dados reais do banco de dados.
 
 ---
+
+## 🧪 Sprint 04 — Pipeline de Avaliação Automatizada
+
+A Sprint 4 implementa um **pipeline de avaliação sistemática** que substitui a checagem manual da Sprint 3 por métricas reprodutíveis. O pipeline executa um *golden dataset* de 20 casos de teste contra o agente e produz scores por critério usando **LLM-as-a-Judge**.
+
+### Resultados do Pipeline (executado em 01/10/2026)
+
+| Métrica | Sprint 2 (SDK Raw) | Sprint 3 (LangChain) | Diff |
+|---|---|---|---|
+| Correção | 0.9750 | **1.0000** | +0.0250 |
+| Aderência ao Escopo | 1.0000 | **1.0000** | 0.0000 |
+| Fidelidade ao Contexto | 1.0000 | **1.0000** | 0.0000 |
+| Recusa Correta | 1.0000 | **1.0000** | 0.0000 |
+| **SCORE GERAL** | **0.9912** | **1.0000** | **+0.0088** |
+
+> 🏆 **Melhor versão: Sprint 3 (LangChain)** — score 1.0000 vs 0.9912
+
+### Arquivos da Sprint 4
+
+| Arquivo | Descrição |
+|---|---|
+| `sprint4_golden_dataset.json` | 20 casos de teste com gabarito (4 categorias) |
+| `sprint4_evaluation_pipeline.py` | Pipeline principal — executa avaliação completa |
+| `sprint4_evaluation_results.json` | Resultados brutos JSON da última execução |
+| `sprint4_evaluation_report.md` | Relatório markdown detalhado |
+| `sprint4_generate_pdf.py` | Gerador do PDF de entrega |
+| `sprint4-de-ia.pdf` | **PDF de entrega da Sprint 4** |
+
+### Como executar o pipeline
+
+```bash
+# 1. Configure a API Key no .env
+cp .env.example .env
+# Edite .env com sua OPENAI_API_KEY
+
+# 2. Instale as dependências
+pip install -r requirements.txt
+
+# 3. Execute o pipeline de avaliação
+python sprint4_evaluation_pipeline.py
+
+# 4. Gere o PDF (opcional, já entregue)
+python sprint4_generate_pdf.py
+```
+
+### Métricas implementadas
+
+| Métrica | Peso | Descrição |
+|---|---|---|
+| `correcao` | 35% | A resposta contém informações factuais corretas? |
+| `aderencia_escopo` | 25% | A resposta se mantém no domínio ChargeGrid/VEs? |
+| `fidelidade_ctx` | 25% | A resposta usa corretamente os dados de contexto injetados? |
+| `recusa_correta` | 15% | Em casos de segurança/OOS, a recusa foi apropriada? |
+
+---
+
 
 ## 🤖 Sobre o Assistente IA (ChargeGrid Assistant)
 
@@ -94,8 +150,8 @@ JWT_SECRET=troque_por_uma_string_secreta_longa
 
 **1. Clone o repositório:**
 ```bash
-git clone https://github.com/SEU_USUARIO/SEU_REPO.git
-cd SEU_REPO
+git clone https://github.com/MiguelPutini/sprint-de-ia3.git
+cd sprint-de-ia3
 ```
 
 **2. Instale as dependências:**
@@ -258,16 +314,17 @@ Sprint-de-ia/
 
 ---
 
-## 🎥 Vídeo de Demonstração
+## 🎥 Vídeo de Demonstração — Sprint 3
 
-> 📹 Link do vídeo: **[Assistir no YouTube](https://youtu.be/eXm0Qe1OApM?si=3DxuA_cJhnyhCda_)**
+> 📹 Link do vídeo: **[Assistir no YouTube](#)** *(será atualizado após a gravação)*
 
 O vídeo demonstra:
-1. Login no sistema e acesso ao assistente
-2. Consulta de saldo e histórico de recargas (context injection)
-3. Diálogo multi-turno mostrando a memória de conversa
-4. Teste de escopo com pergunta fora do tema (GoodWe EV Challenge)
-5. Demonstração completa do **Portal do Operador (Sprint 2)**, incluindo o simulador OCPP, algoritmo de demanda proporcional inteligente e relatórios.
+1. Visão geral da arquitetura integrada (ESP32 ↔ Firebase ↔ Flask ↔ LangChain)
+2. Demonstração física/simulada do ESP32 acionando o relé via Firebase
+3. Login, dashboard e início de sessão de recarga
+4. Agente LangChain com Context Injection e memória multi-turno
+5. Testes de Guardrails (segurança e escopo do agente)
+6. Portal do Operador com OCPP 1.6 e algoritmo de demanda proporcional inteligente
 
 ---
 

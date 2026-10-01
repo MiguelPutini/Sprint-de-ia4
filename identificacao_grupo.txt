@@ -7,3 +7,4 @@
 | Alexandre Rizzi | RM: 569621 |
 | João vitor Giadans | RM: 571608 |
 | João Victor Scheren | RM: 568883 |
+ https://github.com/MiguelPutini/sprint-de-ia3.git
